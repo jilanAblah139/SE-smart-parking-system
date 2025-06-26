@@ -1,0 +1,30 @@
+version: '3.8'
+
+services:
+  mongodb:
+    image: mongo:6
+    container_name: mongodb
+    restart: always
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo-data:/data/db
+
+  user-service:
+    build:
+      context: ./user-service
+    container_name: user-service
+    restart: always
+    ports:
+      - "5002:5002"
+    depends_on:
+      - mongodb
+    environment:
+      - MONGO_URI=mongodb://mongodb:27017/userdb
+      - PORT=5002
+    volumes:
+      - ./user-service:/app
+      - /app/node_modules
+
+volumes:
+  mongo-data:
